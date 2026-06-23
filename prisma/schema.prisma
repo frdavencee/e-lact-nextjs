@@ -83,6 +83,7 @@ model Project {
   purchase_order_number String?
   branch_id             Int?
   implementer           String?
+  pihak_pertama         String?
   status                String?
   notes                 String?
   user_id               Int?

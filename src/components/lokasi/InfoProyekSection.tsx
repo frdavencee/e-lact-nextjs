@@ -14,6 +14,7 @@ export default function InfoProyekSection({ lokasi, onSaved }: Props) {
     contract_number: project?.contract_number ?? '',
     purchase_order_number: project?.purchase_order_number ?? '',
     implementer: project?.implementer ?? '',
+    pihak_pertama: project?.pihak_pertama ?? '',
     waspang_id: project?.waspang_id ?? '',
   })
   const [saving, setSaving] = useState(false)
@@ -55,6 +56,11 @@ export default function InfoProyekSection({ lokasi, onSaved }: Props) {
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">Pelaksana</label>
           <input type="text" value={form.implementer} onChange={e => setForm({...form, implementer: e.target.value})}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Pihak Pertama (ANTARA)</label>
+          <input type="text" value={form.pihak_pertama} onChange={e => setForm({...form, pihak_pertama: e.target.value})}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
         </div>
       </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import { LayoutDashboard, MapPin, Users, GitBranch, UserCog, User, LogOut } from 'lucide-react'
+import { LayoutDashboard, MapPin, Users, GitBranch, UserCog, User, LogOut, Settings } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const navItems = [
   { href: '/personel', label: 'Personel', icon: Users },
   { href: '/branch', label: 'Branch', icon: GitBranch },
   { href: '/users', label: 'Manajemen User', icon: UserCog },
+  { href: '/settings', label: 'Pengaturan', icon: Settings },
 ]
 
 export default function Sidebar() {
