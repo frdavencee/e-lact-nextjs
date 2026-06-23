@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  name              String
+  email             String    @unique
+  password          String
+  email_verified_at DateTime?
+  remember_token    String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  lokasi   Lokasi[]
+  projects Project[]
+
+  @@map("users")
+}
+
+model Branch {
+  id         Int      @id @default(autoincrement())
+  name       String
+  code       String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  lokasi   Lokasi[]
+  projects Project[]
+
+  @@map("branches")
+}
+
+model Personel {
+  id         Int      @id @default(autoincrement())
+  nama       String
+  nik        String
+  jabatan    String?
+  position   String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  commissioningTests CommissioningTest[]
+  projects           Project[]           @relation("WaspangProjects")
+
+  @@map("personels")
+}
+
+model Lokasi {
+  id         Int      @id @default(autoincrement())
+  code       String
+  name       String
+  branch_id  Int?
+  user_id    Int?
+  status     String   @default("belum")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  branch            Branch?            @relation(fields: [branch_id], references: [id])
+  user              User?              @relation(fields: [user_id], references: [id])
+  project           Project?
+  commissioningTest CommissioningTest?
+  boqItems          BoqItem[]
+  markingKabel      MarkingKabel[]
+  fotoLampiran      FotoLampiran[]
+  opmRecords        OpmRecord[]
+  otdrFiles         OtdrFile[]
+  generateLogs      GenerateLog[]
+
+  @@map("lokasis")
+}
+
+model Project {
+  id                    Int      @id @default(autoincrement())
+  lokasi_id             Int?     @unique
+  name                  String
+  contract_number       String?
+  purchase_order_number String?
+  branch_id             Int?
+  implementer           String?
+  status                String?
+  notes                 String?
+  user_id               Int?
+  waspang_id            Int?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  lokasi          Lokasi?   @relation(fields: [lokasi_id], references: [id])
+  branch          Branch?   @relation(fields: [branch_id], references: [id])
+  user            User?     @relation(fields: [user_id], references: [id])
+  waspangRelation Personel? @relation("WaspangProjects", fields: [waspang_id], references: [id])
+
+  @@map("projects")
+}
+
+model CommissioningTest {
+  id               Int       @id @default(autoincrement())
+  lokasi_id        Int       @unique
+  personel_id      Int?
+  tanggal          DateTime?
+  kota_ttd         String?
+  status_pekerjaan String?
+  status_hasil     String?
+  status_kelayakan String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  lokasi   Lokasi    @relation(fields: [lokasi_id], references: [id])
+  personel Personel? @relation(fields: [personel_id], references: [id])
+  images   CommissioningTestImage[]
+
+  @@map("commissioning_tests")
+}
+
+model CommissioningTestImage {
+  id                    Int      @id @default(autoincrement())
+  commissioning_test_id Int
+  file_path             String
+  label                 String?
+  urutan                Int      @default(0)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  commissioningTest CommissioningTest @relation(fields: [commissioning_test_id], references: [id], onDelete: Cascade)
+
+  @@map("commissioning_test_images")
+}
+
+model BoqItem {
+  id         Int      @id @default(autoincrement())
+  lokasi_id  Int
+  kode_item  String?
+  nama_item  String?
+  satuan     String?
+  volume     Float?
+  keterangan String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  lokasi Lokasi @relation(fields: [lokasi_id], references: [id], onDelete: Cascade)
+
+  @@map("boq_items")
+}
+
+model MarkingKabel {
+  id            Int      @id @default(autoincrement())
+  lokasi_id     Int
+  jenis_kabel   String?
+  panjang_meter Float?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  lokasi Lokasi @relation(fields: [lokasi_id], references: [id], onDelete: Cascade)
+
+  @@map("marking_kabels")
+}
+
+model FotoLampiran {
+  id         Int      @id @default(autoincrement())
+  lokasi_id  Int
+  file_path  String
+  label      String?
+  kategori   String?
+  urutan     Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  lokasi Lokasi @relation(fields: [lokasi_id], references: [id], onDelete: Cascade)
+
+  @@map("foto_lampiran")
+}
+
+model OpmRecord {
+  id         Int      @id @default(autoincrement())
+  lokasi_id  Int
+  odp_name   String?
+  port_1     String?
+  port_2     String?
+  port_3     String?
+  port_4     String?
+  port_5     String?
+  port_6     String?
+  port_7     String?
+  port_8     String?
+  notes      String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  lokasi Lokasi @relation(fields: [lokasi_id], references: [id], onDelete: Cascade)
+
+  @@map("opm_records")
+}
+
+model OtdrFile {
+  id         Int      @id @default(autoincrement())
+  lokasi_id  Int
+  odp_name   String?
+  file_path  String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  lokasi Lokasi @relation(fields: [lokasi_id], references: [id], onDelete: Cascade)
+
+  @@map("otdr_files")
+}
+
+model GenerateLog {
+  id           Int       @id @default(autoincrement())
+  lokasi_id    Int
+  generated_by String?
+  generated_at DateTime?
+  file_path    String?
+  versi        Int?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  lokasi Lokasi @relation(fields: [lokasi_id], references: [id], onDelete: Cascade)
+
+  @@map("generate_logs")
+}
