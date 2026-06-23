@@ -81,6 +81,7 @@ export default function LokasiDetailPage() {
   const [lokasi, setLokasi] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [generatingPdf, setGeneratingPdf] = useState(false)
   const [openSection, setOpenSection] = useState<string | null>('info')
 
   useEffect(() => { fetchLokasi() }, [id])
@@ -109,6 +110,24 @@ export default function LokasiDetailPage() {
       alert(err.error || 'Gagal generate dokumen')
     }
     setGenerating(false)
+  }
+
+  const handleGeneratePdf = async () => {
+    setGeneratingPdf(true)
+    const res = await fetch(`/api/lokasi/${id}/generate/pdf`)
+    if (res.ok) {
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `LACT_${lokasi?.code}.pdf`
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } else {
+      const err = await res.json()
+      alert(err.error || 'Gagal generate PDF')
+    }
+    setGeneratingPdf(false)
   }
 
   const toggleSection = (section: string) =>
@@ -155,6 +174,15 @@ export default function LokasiDetailPage() {
             {generating
               ? <><FileText size={16} className="animate-spin" /> Generating...</>
               : <><Download size={16} /> Generate DOCX</>}
+          </button>
+          <button
+            onClick={handleGeneratePdf}
+            disabled={generatingPdf}
+            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-lg transition disabled:opacity-50"
+          >
+            {generatingPdf
+              ? <><FileText size={16} className="animate-spin" /> Generating...</>
+              : <><Download size={16} /> Generate PDF</>}
           </button>
         </div>
       </div>

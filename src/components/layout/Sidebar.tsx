@@ -11,7 +11,7 @@ const navItems = [
   { href: '/personel', label: 'Personel', icon: Users },
   { href: '/branch', label: 'Branch', icon: GitBranch },
   { href: '/users', label: 'Manajemen User', icon: UserCog },
-  { href: '/settings', label: 'Pengaturan', icon: Settings },
+  { href: '/settings', label: 'Logo Perusahaan', icon: Settings },
 ]
 
 export default function Sidebar() {
