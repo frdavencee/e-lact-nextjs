@@ -53,6 +53,13 @@ const FOTO_SECTIONS = [
     ],
   },
   {
+    key: 'data_pengukuran_opm',
+    label: 'Lampiran Data Pengukuran OPM Project Outside Plant Fiber Optic',
+    categories: [
+      { value: 'data_pengukuran_opm', label: 'Data Pengukuran OPM' },
+    ],
+  },
+  {
     key: 'mancore',
     label: 'Lampiran Mancore',
     categories: [
