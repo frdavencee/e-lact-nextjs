@@ -197,7 +197,7 @@ export function LactDocument({ lokasi }: { lokasi: any }) {
           ? <View style={{ alignItems: 'center', marginVertical: 24 }}><Image src={logo} style={{ width: 280, height: 140 }} /></View>
           : <View style={{ height: 60 }} />
         }
-        <View style={{ marginTop: 24, alignItems: 'center' }}>
+        <View style={{ marginTop: 60, alignItems: 'center' }}>
           <Text style={[s.bold, s.center, s.mb8]}>ANTARA</Text>
           <Text style={[s.bold, s.center, s.mb8]}>{project?.pihak_pertama ?? 'PT. TELKOM INFRASTRUKTUR INDONESIA, Tbk.'}</Text>
           <Text style={[s.bold, s.center, s.mb8]}>DENGAN</Text>
