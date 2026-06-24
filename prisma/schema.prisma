@@ -138,6 +138,10 @@ model BoqItem {
   kode_item  String?
   nama_item  String?
   satuan     String?
+  volume_drm    Float?
+  volume_aktual Float?
+  volume_tambah Float?
+  volume_kurang Float?
   volume     Float?
   keterangan String?
   created_at DateTime @default(now())

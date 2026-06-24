@@ -13,9 +13,18 @@ interface BoqRow {
   kode_item: string
   nama_item: string
   satuan: string
-  volume: string
+  volume_drm: string
+  volume_aktual: string
+  volume_tambah: string
+  volume_kurang: string
   keterangan: string
 }
+
+const emptyRow = (): BoqRow => ({
+  kode_item: '', nama_item: '', satuan: '',
+  volume_drm: '', volume_aktual: '', volume_tambah: '', volume_kurang: '',
+  keterangan: '',
+})
 
 export default function BoqSection({ lokasi, onSaved }: Props) {
   const [items, setItems] = useState<BoqRow[]>(
@@ -24,15 +33,18 @@ export default function BoqSection({ lokasi, onSaved }: Props) {
           kode_item: b.kode_item ?? '',
           nama_item: b.nama_item ?? '',
           satuan: b.satuan ?? '',
-          volume: b.volume ?? '',
+          volume_drm: b.volume_drm ?? '',
+          volume_aktual: b.volume_aktual ?? '',
+          volume_tambah: b.volume_tambah ?? '',
+          volume_kurang: b.volume_kurang ?? '',
           keterangan: b.keterangan ?? '',
         }))
-      : [{ kode_item: '', nama_item: '', satuan: '', volume: '', keterangan: '' }]
+      : [emptyRow()]
   )
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
 
-  const addRow = () => setItems([...items, { kode_item: '', nama_item: '', satuan: '', volume: '', keterangan: '' }])
+  const addRow = () => setItems([...items, emptyRow()])
   const removeRow = (i: number) => setItems(items.filter((_, idx) => idx !== i))
   const updateRow = (i: number, field: keyof BoqRow, value: string) => {
     const updated = [...items]
@@ -59,26 +71,46 @@ export default function BoqSection({ lokasi, onSaved }: Props) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {msg && <p className={`text-sm ${msg.includes('Gagal') ? 'text-red-500' : 'text-green-600'}`}>{msg}</p>}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+          <table className="w-full text-xs border border-gray-200 rounded-lg overflow-hidden min-w-[900px]">
             <thead className="bg-gray-50">
               <tr>
-                {['Kode Item', 'Nama Item', 'Satuan', 'Volume', 'Keterangan', ''].map(h => (
-                  <th key={h} className="px-3 py-2 text-left text-xs font-medium text-gray-600">{h}</th>
+                <th rowSpan={2} className="px-2 py-2 text-center font-medium text-gray-600 border border-gray-200 w-8">No</th>
+                <th rowSpan={2} className="px-2 py-2 text-left font-medium text-gray-600 border border-gray-200 w-24">Kode Item</th>
+                <th rowSpan={2} className="px-2 py-2 text-left font-medium text-gray-600 border border-gray-200 w-40">Nama Item</th>
+                <th rowSpan={2} className="px-2 py-2 text-left font-medium text-gray-600 border border-gray-200 w-16">Satuan</th>
+                <th colSpan={4} className="px-2 py-2 text-center font-medium text-gray-600 border border-gray-200">Volume</th>
+                <th rowSpan={2} className="px-2 py-2 text-left font-medium text-gray-600 border border-gray-200 w-28">Keterangan</th>
+                <th rowSpan={2} className="px-2 py-2 border border-gray-200 w-8"></th>
+              </tr>
+              <tr>
+                {['DRM', 'Aktual', 'Tambah', 'Kurang'].map(h => (
+                  <th key={h} className="px-2 py-1 text-center font-medium text-gray-600 border border-gray-200 w-20">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {items.map((row, i) => (
                 <tr key={i}>
-                  {(['kode_item', 'nama_item', 'satuan', 'volume', 'keterangan'] as (keyof BoqRow)[]).map(field => (
-                    <td key={field} className="px-2 py-1">
-                      <input type="text" value={row[field]} onChange={e => updateRow(i, field, e.target.value)}
-                        className="w-full border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-red-400" />
+                  <td className="px-2 py-1 text-center border-r border-gray-200 text-gray-500">{i + 1}</td>
+                  {(['kode_item', 'nama_item', 'satuan'] as (keyof BoqRow)[]).map(f => (
+                    <td key={f} className="px-1 py-1 border-r border-gray-200">
+                      <input type="text" value={row[f]} onChange={e => updateRow(i, f, e.target.value)}
+                        className="w-full border-0 bg-transparent px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-red-400 rounded" />
                     </td>
                   ))}
-                  <td className="px-2 py-1">
+                  {(['volume_drm', 'volume_aktual', 'volume_tambah', 'volume_kurang'] as (keyof BoqRow)[]).map(f => (
+                    <td key={f} className="px-1 py-1 border-r border-gray-200">
+                      <input type="number" value={row[f]} onChange={e => updateRow(i, f, e.target.value)}
+                        className="w-full border-0 bg-transparent px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-red-400 rounded text-center" />
+                    </td>
+                  ))}
+                  <td className="px-1 py-1 border-r border-gray-200">
+                    <input type="text" value={row.keterangan} onChange={e => updateRow(i, 'keterangan', e.target.value)}
+                      className="w-full border-0 bg-transparent px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-red-400 rounded" />
+                  </td>
+                  <td className="px-2 py-1 text-center">
                     <button type="button" onClick={() => removeRow(i)} className="text-red-400 hover:text-red-600">
-                      <Trash2 size={14} />
+                      <Trash2 size={13} />
                     </button>
                   </td>
                 </tr>
