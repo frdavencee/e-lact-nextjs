@@ -117,7 +117,7 @@ const CTSignature = ({ lokasi, ct }: any) => {
         <Text style={s.sigText}>WASPANG</Text>
         <Text style={s.sigText}>{lokasi.project?.implementer ?? 'PT TELKOM AKSES'}</Text>
         {ctImg
-          ? <Image src={ctImg} style={{ width: 100, height: 50, marginVertical: 6 }} />
+          ? <Image src={ctImg} style={{ width: 100, height: 50, marginVertical: 6, alignSelf: 'center' }} />
           : <View style={{ height: 40 }} />
         }
         {waspang && <>
