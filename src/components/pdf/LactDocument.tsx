@@ -158,7 +158,8 @@ const PhotoGrid = ({ photos }: { photos: any[] }) => {
 
 const FOTO_SECTIONS = [
   { label: 'LAMPIRAN EVIDENT PEKERJAAN', cats: ['evident_penarikan_kabel', 'evident_instalasi_aksesoris', 'evident_closure', 'evident_odp'] },
-  { label: 'LAMPIRAN MARKING KABEL', cats: ['marking_kabel', 'laporan_boq'] },
+  { label: 'LAMPIRAN FOTO LAPORAN BOQ', cats: ['laporan_boq'] },
+  { label: 'LAMPIRAN MARKING KABEL', cats: ['marking_kabel'] },
   { label: 'LAMPIRAN EVIDENCE ODP', cats: ['odp_solid', 'pemasangan_odp'] },
   { label: 'LAMPIRAN EVIDENCE AKSESORIS', cats: ['aksesoris_hl', 'aksesoris_sc'] },
   { label: 'LAMPIRAN EVIDENCE CLOSURE & SPLITER 1:4', cats: ['closure_splitter'] },
