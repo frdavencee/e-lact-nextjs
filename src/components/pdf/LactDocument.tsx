@@ -87,6 +87,7 @@ const Paraf = ({ lokasi }: any) => {
   const ct = lokasi.commissioningTest
   const branch = (lokasi.project?.branch?.name ?? lokasi.branch?.name ?? 'SEMARANG').toUpperCase()
   const tgl = ct?.tanggal ? fmt(ct.tanggal) : fmt(new Date())
+  const ctImg = ct?.images?.[0] ? imgPath(ct.images[0].file_path) : null
   return (
     <View style={s.sigRow}>
       <View style={s.sigSpacer} />
@@ -94,7 +95,10 @@ const Paraf = ({ lokasi }: any) => {
         <Text style={s.sigBold}>{branch}, {tgl}</Text>
         <Text style={s.sigText}>WASPANG</Text>
         <Text style={s.sigText}>{lokasi.project?.implementer ?? 'PT TELKOM AKSES'}</Text>
-        <View style={{ height: 40 }} />
+        {ctImg
+          ? <Image src={ctImg} style={{ width: 100, height: 50, marginVertical: 6, alignSelf: 'center' }} />
+          : <View style={{ height: 40 }} />
+        }
         {waspang && <>
           <Text style={s.sigBold}>{waspang.nama ?? waspang.name}</Text>
           <Text style={s.sigText}>NIK : {waspang.nik}</Text>
