@@ -83,8 +83,8 @@ const InfoTable = ({ project, lokasi }: any) => (
 )
 
 const Paraf = ({ lokasi }: any) => {
-  const waspang = lokasi.project?.waspangRelation
   const ct = lokasi.commissioningTest
+  const waspang = ct?.personel ?? lokasi.project?.waspangRelation
   const branch = (lokasi.project?.branch?.name ?? lokasi.branch?.name ?? 'SEMARANG').toUpperCase()
   const tgl = ct?.tanggal ? fmt(ct.tanggal) : fmt(new Date())
   const ctImg = ct?.images?.[0] ? imgPath(ct.images[0].file_path) : null
