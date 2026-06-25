@@ -192,9 +192,9 @@ const FOTO_SECTIONS = [
   { label: 'LAMPIRAN EVIDENCE AKSESORIS', cats: ['aksesoris_hl', 'aksesoris_sc'] },
   { label: 'LAMPIRAN EVIDENCE CLOSURE & SPLITER 1:4', cats: ['closure_splitter'] },
   { label: 'LAMPIRAN EVIDENT HASIL UKUR OPM', cats: ['opm_hasil_ukur'] },
-  { label: 'LAMPIRAN DATA PENGUKURAN OPM PROJECT OUTSIDE PLANT FIBER OPTIC', cats: ['data_pengukuran_opm'] },
-  { label: 'LAMPIRAN MANCORE', cats: ['mancore'] },
-  { label: 'LAMPIRAN EVIDENT AS BUILD DRAWING (ABD)', cats: ['as_build_drawing'] },
+  { label: 'LAMPIRAN DATA PENGUKURAN OPM PROJECT OUTSIDE PLANT FIBER OPTIC', cats: ['data_pengukuran_opm'], large: true },
+  { label: 'LAMPIRAN MANCORE', cats: ['mancore'], large: true },
+  { label: 'LAMPIRAN EVIDENT AS BUILD DRAWING (ABD)', cats: ['as_build_drawing'], large: true },
 ]
 
 export function LactDocument({ lokasi }: { lokasi: any }) {
@@ -213,12 +213,9 @@ export function LactDocument({ lokasi }: { lokasi: any }) {
     tocItems.push(`${no++}.   Lampiran Mancore`)
   tocItems.push(`${no++}.   Berita Acara Lapangan & Dokumen Pendukung Lainnya`)
 
-  const otdrByOdp: Record<string, any[]> = {}
-  ;(lokasi.otdrFiles ?? []).forEach((f: any) => {
-    const k = f.odp_name ?? 'Lainnya'
-    if (!otdrByOdp[k]) otdrByOdp[k] = []
-    otdrByOdp[k].push(f)
-  })
+  const otdrChunks: any[][] = []
+  const allOtdrFiles = lokasi.otdrFiles ?? []
+  for (let i = 0; i < allOtdrFiles.length; i += 2) otdrChunks.push(allOtdrFiles.slice(i, i + 2))
 
   const boqPhotoChunks: any[][] = []
   const boqPhotos = fotos.filter((f: any) => f.kategori === 'laporan_boq')
@@ -314,16 +311,17 @@ export function LactDocument({ lokasi }: { lokasi: any }) {
       )}
 
       {/* FOTO SECTIONS */}
-      {FOTO_SECTIONS.flatMap(({ label, cats }) => {
+      {FOTO_SECTIONS.flatMap(({ label, cats, large }: any) => {
         const photos = fotos.filter((f: any) => cats.includes(f.kategori))
         if (photos.length === 0) return []
+        const chunkSize = large ? 2 : 6
         const chunks: any[][] = []
-        for (let i = 0; i < photos.length; i += 6) chunks.push(photos.slice(i, i + 6))
+        for (let i = 0; i < photos.length; i += chunkSize) chunks.push(photos.slice(i, i + chunkSize))
         return chunks.map((chunk, ci) => (
           <Page key={`${label}-${ci}`} size="A4" style={s.page}>
             <Text style={s.sectionTitle}>{label}</Text>
             <InfoTable project={project} lokasi={lokasi} />
-            <PhotoGrid photos={chunk} />
+            {large ? <BoqPhotoGrid photos={chunk} /> : <PhotoGrid photos={chunk} />}
             <Paraf lokasi={lokasi} />
           </Page>
         ))
@@ -355,14 +353,11 @@ export function LactDocument({ lokasi }: { lokasi: any }) {
       )}
 
       {/* OTDR */}
-      {Object.entries(otdrByOdp).map(([odp, files]) => (
-        <Page key={odp} size="A4" style={s.page}>
-          <Text style={s.sectionTitle}>LAMPIRAN HASIL UKUR OTDR {odp.toUpperCase()}</Text>
+      {otdrChunks.map((chunk, ci) => (
+        <Page key={`otdr-${ci}`} size="A4" style={s.page}>
+          <Text style={s.sectionTitle}>LAMPIRAN HASIL UKUR OTDR</Text>
           <InfoTable project={project} lokasi={lokasi} />
-          {files.map((f: any) => {
-            const src = imgPath(f.file_path)
-            return src ? <Image key={f.id} src={src} style={{ width: 460, height: 280, marginBottom: 8 }} /> : null
-          })}
+          <BoqPhotoGrid photos={chunk.map((f: any) => ({ ...f, label: f.odp_name ?? '' }))} />
           <Paraf lokasi={lokasi} />
         </Page>
       ))}
