@@ -136,14 +136,14 @@ model BoqItem {
   id         Int      @id @default(autoincrement())
   lokasi_id  Int
   kode_item  String?
-  nama_item  String?
+  nama_item  String?  @db.Text
   satuan     String?
   volume_drm    Float?
   volume_aktual Float?
   volume_tambah Float?
   volume_kurang Float?
   volume     Float?
-  keterangan String?
+  keterangan String?  @db.Text
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

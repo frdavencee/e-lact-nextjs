@@ -25,15 +25,22 @@ const s = StyleSheet.create({
   sigText: { textAlign: 'center', fontSize: 10 },
   sigBold: { fontFamily: 'Times-Bold', textAlign: 'center', fontSize: 10 },
   // BOQ table
-  tableWrap: { borderTop: '0.5pt solid #000', borderLeft: '0.5pt solid #000', marginBottom: 12 },
+  tableWrap: { borderTop: '1pt solid #000', borderLeft: '1pt solid #000', marginBottom: 12 },
   tableRow: { flexDirection: 'row' },
-  th: { fontFamily: 'Times-Bold', fontSize: 9, padding: 4, borderRight: '0.5pt solid #000', borderBottom: '0.5pt solid #000', backgroundColor: '#f0f0f0' },
-  td: { fontSize: 9, padding: 4, borderRight: '0.5pt solid #000', borderBottom: '0.5pt solid #000' },
+  th: { fontFamily: 'Times-Bold', fontSize: 9, padding: 4, textAlign: 'center', borderRight: '1pt solid #000', borderBottom: '1pt solid #000', backgroundColor: '#f0f0f0' },
+  td: { fontSize: 9, padding: 4, borderRight: '1pt solid #000', borderBottom: '1pt solid #000' },
+  tdCell: { padding: 4, borderRight: '1pt solid #000', borderBottom: '1pt solid #000', overflow: 'hidden' },
+  tdText: { fontSize: 9 },
+  tdTextCenter: { fontSize: 9, textAlign: 'center' },
   // Photo
   photoRow: { flexDirection: 'row', marginBottom: 6 },
   photoCell: { flex: 1, padding: 4, alignItems: 'center' },
   photoImg: { width: 155, height: 115 },
   photoCaption: { fontSize: 8, textAlign: 'center', marginTop: 3 },
+  // BOQ Photo (larger, centered)
+  boqPhotoRow: { flexDirection: 'row', marginBottom: 10, justifyContent: 'center' },
+  boqPhotoCell: { padding: 6, alignItems: 'center' },
+  boqPhotoImg: { width: 460, height: 280 },
 })
 
 const fmt = (date: any) => {
@@ -156,9 +163,30 @@ const PhotoGrid = ({ photos }: { photos: any[] }) => {
   )
 }
 
+const BoqPhotoGrid = ({ photos }: { photos: any[] }) => {
+  const rows: any[][] = []
+  for (let i = 0; i < photos.length; i += 1) rows.push(photos.slice(i, i + 1))
+  return (
+    <View>
+      {rows.map((row, ri) => (
+        <View key={ri} style={s.boqPhotoRow}>
+          {row.map((p: any) => {
+            const src = imgPath(p.file_path)
+            return (
+              <View key={p.id} style={s.boqPhotoCell}>
+                {src ? <Image src={src} style={s.boqPhotoImg} /> : <View style={[s.boqPhotoImg, { backgroundColor: '#eee' }]} />}
+                {p.label && <Text style={s.photoCaption}>{p.label}</Text>}
+              </View>
+            )
+          })}
+        </View>
+      ))}
+    </View>
+  )
+}
+
 const FOTO_SECTIONS = [
   { label: 'LAMPIRAN EVIDENT PEKERJAAN', cats: ['evident_penarikan_kabel', 'evident_instalasi_aksesoris', 'evident_closure', 'evident_odp'] },
-  { label: 'LAMPIRAN FOTO LAPORAN BOQ', cats: ['laporan_boq'] },
   { label: 'LAMPIRAN MARKING KABEL', cats: ['marking_kabel'] },
   { label: 'LAMPIRAN EVIDENCE ODP', cats: ['odp_solid', 'pemasangan_odp'] },
   { label: 'LAMPIRAN EVIDENCE AKSESORIS', cats: ['aksesoris_hl', 'aksesoris_sc'] },
@@ -191,6 +219,10 @@ export function LactDocument({ lokasi }: { lokasi: any }) {
     if (!otdrByOdp[k]) otdrByOdp[k] = []
     otdrByOdp[k].push(f)
   })
+
+  const boqPhotoChunks: any[][] = []
+  const boqPhotos = fotos.filter((f: any) => f.kategori === 'laporan_boq')
+  for (let i = 0; i < boqPhotos.length; i += 2) boqPhotoChunks.push(boqPhotos.slice(i, i + 2))
 
   return (
     <Document>
@@ -245,31 +277,40 @@ export function LactDocument({ lokasi }: { lokasi: any }) {
 
       {/* BOQ */}
       {lokasi.boqItems?.length > 0 && (
-        <Page size="A4" style={s.page}>
-          <Text style={s.sectionTitle}>LAPORAN BILL OF QUANTITY</Text>
-          <InfoTable project={project} lokasi={lokasi} />
-          <View style={s.tableWrap}>
-            <View style={s.tableRow}>
-              {([['No',0.4],['Kode Item',1.2],['Nama Item',2],['Satuan',0.8],['DRM',0.75],['Aktual',0.75],['Tambah',0.75],['Kurang',0.75],['Keterangan',2]] as [string,number][]).map(([h,f]) => (
-                <Text key={h} style={[s.th, { flex: f }]}>{h}</Text>
+        <>
+          <Page size="A4" style={s.page}>
+            <Text style={s.sectionTitle}>LAPORAN BILL OF QUANTITY</Text>
+            <InfoTable project={project} lokasi={lokasi} />
+            <View style={s.tableWrap}>
+              <View style={s.tableRow}>
+                {([['No',0.4],['Kode Item',1.6],['Nama Item',1.8],['Satuan',0.5],['DRM',0.5],['Aktual',0.5],['Tambah',0.5],['Kurang',0.5]] as [string,number][]).map(([h,f]) => (
+                  <Text key={h} style={[s.th, { flex: f }]}>{h}</Text>
+                ))}
+              </View>
+              {lokasi.boqItems.map((item: any, i: number) => (
+                <View key={item.id} style={s.tableRow}>
+                  <View style={[s.tdCell, { flex: 0.4 }]}><Text style={s.tdText}>{i + 1}</Text></View>
+                  <View style={[s.tdCell, { flex: 1.6 }]}><Text style={s.tdText}>{item.kode_item ?? '-'}</Text></View>
+                  <View style={[s.tdCell, { flex: 1.8 }]}><Text style={s.tdText}>{item.nama_item ?? '-'}</Text></View>
+                  <View style={[s.tdCell, { flex: 0.5 }]}><Text style={s.tdTextCenter}>{item.satuan ?? '-'}</Text></View>
+                  <View style={[s.tdCell, { flex: 0.5 }]}><Text style={s.tdTextCenter}>{item.volume_drm ?? '-'}</Text></View>
+                  <View style={[s.tdCell, { flex: 0.5 }]}><Text style={s.tdTextCenter}>{item.volume_aktual ?? '-'}</Text></View>
+                  <View style={[s.tdCell, { flex: 0.5 }]}><Text style={s.tdTextCenter}>{item.volume_tambah ?? '-'}</Text></View>
+                  <View style={[s.tdCell, { flex: 0.5 }]}><Text style={s.tdTextCenter}>{item.volume_kurang ?? '-'}</Text></View>
+                </View>
               ))}
             </View>
-            {lokasi.boqItems.map((item: any, i: number) => (
-              <View key={item.id} style={s.tableRow}>
-                <Text style={[s.td, { flex: 0.4 }]}>{i + 1}</Text>
-                <Text style={[s.td, { flex: 1.2 }]}>{item.kode_item ?? '-'}</Text>
-                <Text style={[s.td, { flex: 2 }]}>{item.nama_item ?? '-'}</Text>
-                <Text style={[s.td, { flex: 0.8 }]}>{item.satuan ?? '-'}</Text>
-                <Text style={[s.td, { flex: 0.75 }]}>{item.volume_drm ?? '-'}</Text>
-                <Text style={[s.td, { flex: 0.75 }]}>{item.volume_aktual ?? '-'}</Text>
-                <Text style={[s.td, { flex: 0.75 }]}>{item.volume_tambah ?? '-'}</Text>
-                <Text style={[s.td, { flex: 0.75 }]}>{item.volume_kurang ?? '-'}</Text>
-                <Text style={[s.td, { flex: 2 }]}>{item.keterangan ?? '-'}</Text>
-              </View>
-            ))}
-          </View>
-          <Paraf lokasi={lokasi} />
-        </Page>
+            <Paraf lokasi={lokasi} />
+          </Page>
+          {boqPhotoChunks.map((chunk, ci) => (
+            <Page key={`boq-foto-${ci}`} size="A4" style={s.page}>
+              <Text style={s.sectionTitle}>{ci === 0 ? 'FOTO LAPORAN BOQ' : 'FOTO LAPORAN BOQ (lanjutan)'}</Text>
+              <InfoTable project={project} lokasi={lokasi} />
+              <BoqPhotoGrid photos={chunk} />
+              <Paraf lokasi={lokasi} />
+            </Page>
+          ))}
+        </>
       )}
 
       {/* FOTO SECTIONS */}
