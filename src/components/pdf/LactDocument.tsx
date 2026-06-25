@@ -40,7 +40,7 @@ const s = StyleSheet.create({
   // BOQ Photo (larger, centered)
   boqPhotoRow: { flexDirection: 'row', marginBottom: 10, justifyContent: 'center' },
   boqPhotoCell: { padding: 6, alignItems: 'center' },
-  boqPhotoImg: { width: 460, height: 280 },
+  boqPhotoImg: { width: 460, height: 200 },
 })
 
 const fmt = (date: any) => {
