@@ -62,9 +62,9 @@ const toDataUrl = (filePath: string): string | null => {
 const imgPath = (fp: string) => toDataUrl(join(process.cwd(), 'public', fp))
 
 const logoPath = () => {
-  const base = process.env.LARAVEL_PATH ?? 'c:/xampp/htdocs/e-lact-telkom'
-  for (const ext of ['png', 'jpg', 'jpeg']) {
-    const result = toDataUrl(join(base, 'public', 'images', `logo.${ext}`))
+  const base = join(process.cwd(), 'public', 'logo')
+  for (const ext of ['png', 'jpg', 'jpeg', 'svg']) {
+    const result = toDataUrl(join(base, `logo.${ext}`))
     if (result) return result
   }
   return null

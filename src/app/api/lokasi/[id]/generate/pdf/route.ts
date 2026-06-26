@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { LactDocument } from '@/components/pdf/LactDocument'
 import React from 'react'
+import { apiServerError } from '@/lib/api-error'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
