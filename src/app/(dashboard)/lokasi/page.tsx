@@ -28,15 +28,21 @@ export default function LokasiPage() {
   const fetchLokasi = async () => {
     setLoading(true)
     const res = await fetch('/api/lokasi')
-    const data = await res.json()
-    setLokasi(data)
+    if (res.ok) {
+      const data = await res.json()
+      setLokasi(Array.isArray(data) ? data : [])
+    } else {
+      setLokasi([])
+    }
     setLoading(false)
   }
 
   const fetchBranches = async () => {
     const res = await fetch('/api/branch')
-    const data = await res.json()
-    setBranches(data)
+    if (res.ok) {
+      const data = await res.json()
+      setBranches(Array.isArray(data) ? data : [])
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

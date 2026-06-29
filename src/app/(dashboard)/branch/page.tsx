@@ -19,8 +19,10 @@ export default function BranchPage() {
 
   const fetchData = async () => {
     const res = await fetch('/api/branch')
-    const data = await res.json()
-    setList(data)
+    if (res.ok) {
+      const data = await res.json()
+      setList(Array.isArray(data) ? data : [])
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
