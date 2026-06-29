@@ -16,6 +16,7 @@ interface Lokasi {
 export default function LokasiPage() {
   const [lokasi, setLokasi] = useState<Lokasi[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ code: '', name: '', branch_id: '' })
   const [branches, setBranches] = useState<{ id: number; name: string }[]>([])
@@ -27,11 +28,14 @@ export default function LokasiPage() {
 
   const fetchLokasi = async () => {
     setLoading(true)
+    setError('')
     const res = await fetch('/api/lokasi')
     if (res.ok) {
       const data = await res.json()
       setLokasi(Array.isArray(data) ? data : [])
     } else {
+      const err = await res.json().catch(() => ({}))
+      setError(err.error ?? `Error ${res.status}`)
       setLokasi([])
     }
     setLoading(false)
@@ -134,6 +138,8 @@ export default function LokasiPage() {
       <div className="bg-white rounded-xl shadow overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-gray-400 text-sm">Memuat data...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500 text-sm">Gagal memuat data: {error}</div>
         ) : lokasi.length === 0 ? (
           <div className="p-8 text-center text-gray-400 text-sm">Belum ada data lokasi.</div>
         ) : (
